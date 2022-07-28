@@ -1,11 +1,14 @@
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
 import Head from "../../node_modules/next/head";
 import { SubscribeButton } from "../components/SubscribeButton/index";
 import { stripe } from "../services/stripe";
 
 import styles from "./home.module.scss";
 
-
+// Maneiras de fazer chamadas as APIs
+// Client-side (acao do usuario, uma informacao que nao tem necessidade de estar ali)
+// Server-side (index, dinamico informacoes do usuarios)
+// Static site generation (compartilhar o mesmo conteudo de uma pagina com todos os usuarios index do google)
 interface HomeProps{
   product:{
     priceId:string;
@@ -36,7 +39,7 @@ export default function Home({product}: HomeProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const price = await stripe.prices.retrieve('price_1LQXZpGSS5bDOJyNWdtbEV1S', 
   );
   const product = {
@@ -50,5 +53,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     props: {
      product,
     },
+    revalidate: 60 * 60 * 24, //24hours
+  
   };
 };
